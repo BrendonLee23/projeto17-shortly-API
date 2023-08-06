@@ -1,4 +1,4 @@
-import urlSchema from '../schemas/urlSchema';
+import urlSchema from '../schemas/urlSchema.js';
 
 export default function validateURL (req, res, next) {
 

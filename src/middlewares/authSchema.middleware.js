@@ -1,4 +1,5 @@
-import { connection } from '../config/database.js';
+import { db } from "../database/database.connection.js";
+
 
 export async function validateToken(req, res, next) {
 
@@ -11,7 +12,7 @@ export async function validateToken(req, res, next) {
 
     }
 
-    const { rows: sessions } = await connection.query(
+    const { rows: sessions } = await db.query(
 
         `SELECT * FROM sessions WHERE token=$1`
 
@@ -25,7 +26,7 @@ export async function validateToken(req, res, next) {
 
     }
 
-    const { rows: users } = await connection.query(
+    const { rows: users } = await db.query(
     
         `SELECT * FROM users WHERE id=$1`
     

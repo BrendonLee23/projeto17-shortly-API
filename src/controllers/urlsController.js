@@ -1,13 +1,13 @@
 import { customAlphabet } from 'nanoid';
-import { connection } from '../config/database.js'
+import { db } from '../database/database.connection.js'
 
-export default async function insertURL(req, res) {
+export async function insertURL(req, res) {
 
     const url = res.locals.url;
 
     try {
 
-        const { rows: result } = await connection.query(`
+        const { rows: result } = await db.query(`
             SELECT * FROM sessions WHERE token=$1
             `, [res.locals.token]);
 
@@ -23,7 +23,7 @@ export default async function insertURL(req, res) {
             "newURL": newUrl
         }
 
-        const { rows: urlResult } = await connection.query(`
+        const { rows: urlResult } = await db.query(`
             SELECT "newURL" FROM "urls" WHERE "newURL"=$1
             `, [newUrl]);
 
@@ -32,7 +32,7 @@ export default async function insertURL(req, res) {
             newUrl = nanoid();
         }
 
-        await connection.query(`
+        await db.query(`
             INSERT INTO "urls" ("userId", url, "newUrl", "accessCount") 
             VALUES ($1, $2, $3, $4)`, [result[0].userId, url, newUrl, 0]);
 
@@ -43,13 +43,13 @@ export default async function insertURL(req, res) {
     }
 
 }
-export default async function getUrl(req, res) {
+export async function getUrl(req, res) {
 
     const { id } = req.params;
 
     try {
 
-        const { rows: result } = await connection.query(`
+        const { rows: result } = await db.query(`
         
             SELECT * FROM "urls" where id=$1
         
@@ -78,13 +78,13 @@ export default async function getUrl(req, res) {
     }
 
 }
-export default async function getNewUrl(req, res) {
+export async function getNewUrl(req, res) {
 
     const { newUrl } = req.params;
 
     try {
 
-        const { rows: result } = await connection.query(`
+        const { rows: result } = await db.query(`
 
             SELECT * FROM "urls" WHERE "newURL"=$1
 
@@ -99,7 +99,7 @@ export default async function getNewUrl(req, res) {
         let access = result[0].accessCount;
         access++;
 
-        await connection.query(`
+        await db.query(`
         
             UPDATE "urls" SET "accessCount"=$1 WHERE "newURL"=$2
 
@@ -114,14 +114,14 @@ export default async function getNewUrl(req, res) {
     }
 
 }
-export default async function deleteNewUrl(req,res){
+export async function deleteNewUrl(req,res){
 
     const { id } = req.params;
     const token = res.locals.token;
 
     try{
 
-        const{rows:urlResult} = await connection.query(`
+        const{rows:urlResult} = await db.query(`
 
             SELECT * FROM "urls" WHERE id=$1
         
@@ -133,7 +133,7 @@ export default async function deleteNewUrl(req,res){
 
         }
 
-        const {rows:result} = await connection.query(`
+        const {rows:result} = await db.query(`
 
             SELECT sessions.id as "idUrl", sessions.token, "urls"."deletedAt" 
             FROM "sessions" 
@@ -155,7 +155,7 @@ export default async function deleteNewUrl(req,res){
 
         }
 
-        await connection.query(`
+        await db.query(`
         
             UPDATE "urls" SET "deletedAt" = NOW() WHERE "id"=$1
         

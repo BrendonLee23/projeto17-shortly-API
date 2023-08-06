@@ -78,3 +78,39 @@ export default async function getUrl(req, res) {
     }
 
 }
+export default async function getNewUrl(req, res) {
+
+    const { newUrl } = req.params;
+
+    try {
+
+        const { rows: result } = await connection.query(`
+
+            SELECT * FROM "urls" WHERE "newURL"=$1
+
+        `, [newUrl]);
+
+        if ((result.length < 1) || (result[0].deletedAt !== null)) {
+
+            return res.sendStatus(404);
+
+        }
+
+        let access = result[0].accessCount;
+        access++;
+
+        await connection.query(`
+        
+            UPDATE "urls" SET "accessCount"=$1 WHERE "newURL"=$2
+
+        `, [views, newUrl]);
+
+        res.redirect(result[0].url);
+
+    } catch (e) {
+
+        res.send(e).status(500);
+
+    }
+
+}

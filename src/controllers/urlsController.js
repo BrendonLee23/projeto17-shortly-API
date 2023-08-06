@@ -43,3 +43,38 @@ export default async function insertURL(req, res) {
     }
 
 }
+export default async function getUrl(req, res) {
+
+    const { id } = req.params;
+
+    try {
+
+        const { rows: result } = await connection.query(`
+        
+            SELECT * FROM "urls" where id=$1
+        
+        `, [id]);
+
+        if ((result.length < 1) || (result[0].deletedAt !== null)) {
+
+            return res.sendStatus(404);
+
+        }
+
+        const response = {
+
+            "id": result[0].id,
+            "newURL": result[0].newUrl,
+            "url": result[0].url
+
+        }
+
+        res.status(200).send(response);
+
+    } catch (e) {
+
+        res.send(e).status(500);
+
+    }
+
+}

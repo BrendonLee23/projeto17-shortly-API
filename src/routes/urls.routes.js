@@ -4,9 +4,6 @@ import validateURL from '../middlewares/urlSchema.middleware.js';
 import { deleteNewUrl, getNewUrl, getUrl, insertURL } from '../controllers/urlsController.js';
 
 
-
-
-
 const urlRouter = Router();
 
 urlRouter.post('/urls/shorten', validateToken, validateURL, insertURL);

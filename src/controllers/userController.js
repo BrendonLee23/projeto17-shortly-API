@@ -1,6 +1,7 @@
 
 import bcrypt from 'bcrypt';
 import { db } from '../database/database.connection.js';
+import { v4 } from 'uuid';
 
 
 export async function createUser(req, res) {
@@ -20,15 +21,19 @@ export async function createUser(req, res) {
             return res.sendStatus(422);
 
         }
+        if (user.password != user.confirmPassword ){
+            return res.sendStatus(422);
+        }
 
         const passwordHash = bcrypt.hashSync(user.password, 10);
+        const confirmPasswordHash = bcrypt.hashSync(user.confirmPassword, 10);
 
         await db.query(`
         
-            INSERT INTO users(name, email, password)
-            VALUES ($1, $2, $3)
+            INSERT INTO users(name, email, password, "confirmPassword")
+            VALUES ($1, $2, $3, $4)
 
-        `, [user.name, user.email, passwordHash]);
+        `, [user.name, user.email, passwordHash, confirmPasswordHash]);
 
         res.sendStatus(201);
 

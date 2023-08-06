@@ -114,3 +114,59 @@ export default async function getNewUrl(req, res) {
     }
 
 }
+export default async function deleteNewUrl(req,res){
+
+    const { id } = req.params;
+    const token = res.locals.token;
+
+    try{
+
+        const{rows:urlResult} = await connection.query(`
+
+            SELECT * FROM "urls" WHERE id=$1
+        
+        `, [id]);
+
+        if (urlResult.length === 0){
+
+            return res.sendStatus(404);
+
+        }
+
+        const {rows:result} = await connection.query(`
+
+            SELECT sessions.id as "idUrl", sessions.token, "urls"."deletedAt" 
+            FROM "sessions" 
+            JOIN "urls" 
+            ON sessions."userId" = "urls"."userId"
+            WHERE "urls".id = $1 AND sessions.token=$2
+            
+        `, [id, token]);       
+
+        if (result.length === 0){
+
+            return res.sendStatus(422);
+
+        }
+
+        if (result[0].deletedAt!==null){
+
+            return res.sendStatus(406);
+
+        }
+
+        await connection.query(`
+        
+            UPDATE "urls" SET "deletedAt" = NOW() WHERE "id"=$1
+        
+        `, [id]);
+
+        res.sendStatus(201)
+
+    }catch(e){
+        
+        res.send(e).status(500);
+
+    }
+
+}

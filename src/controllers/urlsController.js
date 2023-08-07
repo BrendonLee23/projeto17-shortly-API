@@ -13,7 +13,7 @@ export async function insertURL(req, res) {
         let newUrl = nanoid();
 
         const { rows: urlResult } = await db.query(`
-            SELECT "newURL" FROM urls WHERE "newURL"=$1
+            SELECT "shortUrl" FROM urls WHERE "shortUrl"=$1
             `, [newUrl]);
 
         if (urlResult.length > 0) {
@@ -21,8 +21,8 @@ export async function insertURL(req, res) {
         }
 
         const resultURL = await db.query(`
-            INSERT INTO urls ("userId", "oldURL", "newURL", "accessCount") 
-            VALUES ($1, $2, $3, $4) RETURNING id, "newURL"`, [user.id, url, newUrl, 0]);
+            INSERT INTO urls ("userId", "oldURL", "shortUrl", "accessCount") 
+            VALUES ($1, $2, $3, $4) RETURNING id, "shortUrl"`, [user.id, url, newUrl, 0]);
 
         res.status(201).send(resultURL.rows[0])
         /* res.send(resultURL.rows[0]).status(201); */
@@ -53,7 +53,7 @@ export async function getUrl(req, res) {
         const response = {
 
             "id": result[0].id,
-            "newURL": result[0].newUrl,
+            "shortUrl": result[0].newUrl,
             "url": result[0].url
 
         }
@@ -75,7 +75,7 @@ export async function getNewUrl(req, res) {
 
         const { rows: result } = await db.query(`
 
-            SELECT * FROM "urls" WHERE "newURL"=$1
+            SELECT * FROM "urls" WHERE "shortUrl"=$1
 
         `, [newUrl]);
 
@@ -90,7 +90,7 @@ export async function getNewUrl(req, res) {
 
         await db.query(`
         
-            UPDATE "urls" SET "accessCount"=$1 WHERE "newURL"=$2
+            UPDATE "urls" SET "accessCount"=$1 WHERE "shortUrl"=$2
 
         `, [views, newUrl]);
 

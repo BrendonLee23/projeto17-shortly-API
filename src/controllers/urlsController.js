@@ -104,6 +104,8 @@ export async function getNewUrl(req, res) {
 export async function deleteNewUrl(req,res){
 
     const { id } = req.params;
+    const {user} = res.locals;
+    console.log(user);
 
     try{
 
@@ -112,10 +114,15 @@ export async function deleteNewUrl(req,res){
             SELECT * FROM "urls" WHERE id=$1
         
         `, [id]);
+        console.log(urlResult);
+        if(user.id !== urlResult[0].userId){
+            return res.sendStatus(401);
+        }
 
-        if (urlResult.length === 0){
+        if (urlResult[0].length === 0){
             return res.sendStatus(404);
         }
+        
 
         await db.query(`
         

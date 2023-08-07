@@ -17,7 +17,7 @@ export async function createUser(req, res) {
 
         if (existingUser.rowCount > 0) {
 
-            return res.sendStatus(422);
+            return res.sendStatus(409);
 
         }
         if (user.password != user.confirmPassword ){
@@ -55,7 +55,7 @@ export async function userLogin (req, res) {
 
     if (!user) {
 
-        return res.sendStatus(404);
+        return res.sendStatus(401);
 
     }
 
@@ -69,7 +69,7 @@ export async function userLogin (req, res) {
         
         `, [token, user.id]);
 
-        return res.send(token);
+        return res.send({token});
 
     }
 

@@ -1,10 +1,10 @@
-import jois from 'jois';
+import joi from 'joi';
 
-const signInSchema = jois.object({
+const signInSchema = joi.object({
 
-    name: jois.string().required(),
-    password: jois.string().required()
+    email: joi.string().required(),
+    password: joi.string().required()
 
 });
 
-export default signInSchema
+export default signInSchema;

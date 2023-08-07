@@ -7,7 +7,6 @@ import { validateToken } from '../middlewares/authSchema.middleware.js';
 
 const userRouter = Router();
 
-userRouter.post('/users', validateSchema(signUpSchema), createUser);
-userRouter.get('/users', validateToken, getUser);
+userRouter.post('/signup', validateToken, validateSchema(signUpSchema), createUser);
 
 export default userRouter;

@@ -163,10 +163,8 @@ export async function deleteNewUrl(req,res){
 
         res.sendStatus(201)
 
-    }catch(e){
-        
-        res.send(e).status(500);
-
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 
 }

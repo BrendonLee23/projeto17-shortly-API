@@ -4,7 +4,7 @@ export default function validateURL (req, res, next) {
 
     const { url } = req.body;
 
-    const validateURL = urlSchema.validate({ url });
+    const validateURL = urlSchema.validate({url});
 
     if(validateURL.error){
 

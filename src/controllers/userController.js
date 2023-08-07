@@ -36,16 +36,16 @@ export async function createUser(req, res) {
 
         res.sendStatus(201);
 
-    } catch (e) {
-
-        res.send(e).status(500);
-
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 
 }
 export async function userLogin (req, res) {
 
     const { email, password } = req.body;
+
+    const token = v4();
 
     const { rows: users } = await db.query(`
     
@@ -62,8 +62,6 @@ export async function userLogin (req, res) {
     }
 
     if (bcrypt.compareSync(password, user.password)) {
-
-        const token = v4();
 
         await db.query(`
         
@@ -84,7 +82,7 @@ export async function getUser(req, res) {
 
     try {
 
-        res.send(user);
+        res.send(user).status(200);
 
     } catch (e) {
 

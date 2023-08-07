@@ -27,7 +27,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.sessions (
     id integer NOT NULL,
     token text NOT NULL,
-    "userId" integer NOT NULL
+    "userId" integer NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
 );
 
 
@@ -93,7 +94,9 @@ CREATE TABLE public.users (
     id integer NOT NULL,
     name text NOT NULL,
     email text NOT NULL,
-    password text NOT NULL
+    password text NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "confirmPassword" text NOT NULL
 );
 
 
@@ -142,6 +145,8 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.sessions VALUES (1, 'a0581b2d-5694-48a8-b63b-45773759da68', 2, '2023-08-06 22:17:36.623251');
+INSERT INTO public.sessions VALUES (2, '45ea1660-a7d6-4aac-b74a-f0a9185b395e', 2, '2023-08-06 22:55:45.777989');
 
 
 --
@@ -154,13 +159,15 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.users VALUES (1, 'João Pedro', 'joaopedro@driven.com.br', '$2b$10$kq8NN18ZAp0TOL9UG840b.KybcoQerU2vDo8PilHTik8Dn9R43Fz.', '2023-08-06 21:47:31.361532', '$2b$10$n8ZtNICb42q6TUclxZNTrefnFqcuzKue9xJ0WjQn4k7W7EkgASPou');
+INSERT INTO public.users VALUES (2, 'brendo', 'brendo@driven.com.br', '$2b$10$DBfVPmlTYSTe4NALh1hJretkqVHjUd6dQZPqP1N4QCbxynGBVuhwO', '2023-08-06 22:02:13.743934', '$2b$10$3u9fR/VSwBUy1z1z6LxKWOTLQBknOjRXawdgLrF.ISLLJjmXRMWDG');
 
 
 --
 -- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.sessions_id_seq', 1, false);
+SELECT pg_catalog.setval('public.sessions_id_seq', 2, true);
 
 
 --
@@ -174,7 +181,7 @@ SELECT pg_catalog.setval('public.urls_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_id_seq', 2, true);
 
 
 --

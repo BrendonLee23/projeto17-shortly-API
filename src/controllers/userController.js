@@ -45,8 +45,6 @@ export async function userLogin (req, res) {
 
     const { email, password } = req.body;
 
-    const token = v4();
-
     const { rows: users } = await db.query(`
     
         SELECT * FROM users WHERE email=$1
@@ -62,6 +60,8 @@ export async function userLogin (req, res) {
     }
 
     if (bcrypt.compareSync(password, user.password)) {
+
+        const token = v4();
 
         await db.query(`
         

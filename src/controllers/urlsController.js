@@ -9,30 +9,28 @@ export async function insertURL(req, res) {
     try {
 
         const nanoid = customAlphabet('1234567890abcdef', 6)
-        console.log(nanoid, "2");
 
         let newUrl = nanoid();
 
         const { rows: urlResult } = await db.query(`
-            SELECT "newURL" FROM "urls" WHERE "newURL"=$1
+            SELECT "newURL" FROM urls WHERE "newURL"=$1
             `, [newUrl]);
-        console.log(urlResult[0], "1");
 
         if (urlResult.length > 0) {
             newUrl = nanoid();
         }
 
         const resultURL = await db.query(`
-            INSERT INTO "urls" ("userId", url, "newURL", "accessCount") 
+            INSERT INTO urls ("userId", "oldURL", "newURL", "accessCount") 
             VALUES ($1, $2, $3, $4) RETURNING id, "newURL"`, [user.id, url, newUrl, 0]);
-        console.log(resultURL)
-        res.send(resultURL.rows[0]).status(201);
+
+        res.status(201).send(resultURL.rows[0])
+        /* res.send(resultURL.rows[0]).status(201); */
 
     } catch (e) {
 
-        res.send(e).status(500);
+        res.send(e.message).status(500);
     }
-
 }
 export async function getUrl(req, res) {
 

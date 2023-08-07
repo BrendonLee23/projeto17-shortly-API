@@ -4,7 +4,7 @@ import { db } from "../database/database.connection.js";
 export async function validateToken(req, res, next) {
 
     const auth = req.headers.authorization;
-    const token = auth?.replace('Bearer', '');
+    const token = auth?.replace('Bearer ', '');
 
     if (!token) {
 

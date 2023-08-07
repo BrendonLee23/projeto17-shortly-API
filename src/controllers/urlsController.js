@@ -3,40 +3,31 @@ import { db } from '../database/database.connection.js'
 
 export async function insertURL(req, res) {
 
-    const url = res.locals.url;
+    const {url} = req.body;
+    const user = res.locals.user
 
     try {
 
-        const { rows: result } = await db.query(`
-            SELECT * FROM sessions WHERE token=$1
-            `, [res.locals.token]);
-
-        if (result.length === 0) {
-            return res.sendStatus(422);
-        }
-
         const nanoid = customAlphabet('1234567890abcdef', 6)
+        console.log(nanoid, "2");
 
         let newUrl = nanoid();
-
-        const response = {
-            "newURL": newUrl
-        }
 
         const { rows: urlResult } = await db.query(`
             SELECT "newURL" FROM "urls" WHERE "newURL"=$1
             `, [newUrl]);
-
+        console.log(urlResult[0], "1");
 
         if (urlResult.length > 0) {
             newUrl = nanoid();
         }
 
-        await db.query(`
-            INSERT INTO "urls" ("userId", url, "newUrl", "accessCount") 
-            VALUES ($1, $2, $3, $4)`, [result[0].userId, url, newUrl, 0]);
+        const resultURL = await db.query(`
+            INSERT INTO "urls" ("userId", url, "newURL", "accessCount") 
+            VALUES ($1, $2, $3, $4) RETURNING id, "newURL"`, [user.id, url, newUrl, 0]);
+        console.log(resultURL)
+        res.send(resultURL.rows[0]).status(201);
 
-        res.status(201).send(response);
     } catch (e) {
 
         res.send(e).status(500);

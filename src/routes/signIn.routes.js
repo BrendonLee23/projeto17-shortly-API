@@ -8,6 +8,6 @@ const signInRouter = Router();
 
 signInRouter.post('/signin', validateSchema(signInSchema), userLogin);
 signInRouter.get('/users/me', validateToken, getUser);
-signInRouter.get('/users', getUser);
+/* signInRouter.get('/users', getUser); */
 
 export default signInRouter;

@@ -43,7 +43,7 @@ export async function getUrl(req, res) {
             SELECT * FROM "urls" WHERE id=$1
         
         `, [id]);
-        console.log(result, "vasco");
+
 
         if (!result.length > 0) {
 
@@ -57,7 +57,7 @@ export async function getUrl(req, res) {
             "url": result[0].oldURL
 
         }
-        console.log(response, "gremio");
+
         res.status(200).json(response);
 
     } catch (e) {
@@ -69,32 +69,30 @@ export async function getUrl(req, res) {
 }
 export async function getNewUrl(req, res) {
 
-    const { newUrl } = req.params;
+    const { shortUrl } = req.params;
 
     try {
 
         const { rows: result } = await db.query(`
 
-            SELECT * FROM "urls" WHERE "shortUrl"=$1
+            SELECT * FROM urls WHERE "shortUrl"=$1
 
-        `, [newUrl]);
+        `, [shortUrl]);
+        console.log(result);
 
-        if ((result.length < 1) || (result[0].deletedAt !== null)) {
+        if (!result.length > 0) {
 
             return res.sendStatus(404);
 
         }
 
-        let access = result[0].accessCount;
-        access++;
-
         await db.query(`
         
-            UPDATE "urls" SET "accessCount"=$1 WHERE "shortUrl"=$2
+            UPDATE "urls" SET "accessCount"="accessCount" + 1 WHERE "shortUrl"=$1
 
-        `, [views, newUrl]);
+        `, [ shortUrl]);
 
-        res.redirect(result[0].url);
+        res.redirect(result[0].shortUrl);
 
     } catch (e) {
 
@@ -106,7 +104,6 @@ export async function getNewUrl(req, res) {
 export async function deleteNewUrl(req,res){
 
     const { id } = req.params;
-    const token = res.locals.token;
 
     try{
 
@@ -117,40 +114,16 @@ export async function deleteNewUrl(req,res){
         `, [id]);
 
         if (urlResult.length === 0){
-
             return res.sendStatus(404);
-
-        }
-
-        const {rows:result} = await db.query(`
-
-            SELECT sessions.id as "idUrl", sessions.token, "urls"."deletedAt" 
-            FROM "sessions" 
-            JOIN "urls" 
-            ON sessions."userId" = "urls"."userId"
-            WHERE "urls".id = $1 AND sessions.token=$2
-            
-        `, [id, token]);       
-
-        if (result.length === 0){
-
-            return res.sendStatus(422);
-
-        }
-
-        if (result[0].deletedAt!==null){
-
-            return res.sendStatus(406);
-
         }
 
         await db.query(`
         
-            UPDATE "urls" SET "deletedAt" = NOW() WHERE "id"=$1
+        DELETE FROM urls WHERE id = $1
         
         `, [id]);
 
-        res.sendStatus(201)
+        res.sendStatus(204)
 
     } catch (error) {
         res.status(500).send(error.message);

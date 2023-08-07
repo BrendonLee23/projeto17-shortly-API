@@ -55,7 +55,7 @@ export async function userLogin(req, res) {
 `, [email]);
 
         const [user] = users;
-
+        console.log(user)
         if (!user) {
 
             return res.sendStatus(401);

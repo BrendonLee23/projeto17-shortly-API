@@ -48,7 +48,6 @@ export async function getUrl(req, res) {
         if ((result.length < 1) || (result[0].deletedAt !== null)) {
 
             return res.sendStatus(404);
-
         }
 
         const response = {
@@ -58,9 +57,6 @@ export async function getUrl(req, res) {
             "url": result[0].url
 
         }
-        console.log(response, "vasco")
-
-
         res.status(200).send(response);
 
     } catch (e) {

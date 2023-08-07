@@ -11,7 +11,6 @@ export async function createUser(req, res) {
     try {
 
         const existingUser = await db.query(`
-
             SELECT * FROM users WHERE email=$1
         
         `, [user.email]);

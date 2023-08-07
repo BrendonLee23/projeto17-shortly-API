@@ -43,9 +43,9 @@ export async function getUrl(req, res) {
             SELECT * FROM "urls" WHERE id=$1
         
         `, [id]);
-        console.log(result.rows[0], "vasco");
+        console.log(result, "vasco");
 
-        if ((result.length < 1) || (result[0].deletedAt !== null)) {
+        if (!result.length > 0) {
 
             return res.sendStatus(404);
         }
@@ -53,11 +53,12 @@ export async function getUrl(req, res) {
         const response = {
 
             "id": result[0].id,
-            "shortUrl": result[0].newUrl,
-            "url": result[0].url
+            "shortUrl": result[0].shortUrl,
+            "url": result[0].oldURL
 
         }
-        res.status(200).send(response);
+        console.log(response, "gremio");
+        res.status(200).json(response);
 
     } catch (e) {
 

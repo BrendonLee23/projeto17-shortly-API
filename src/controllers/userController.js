@@ -90,7 +90,7 @@ export async function getUser(req, res) {
     const { user } = res.locals;
 
     try {
-
+        
         res.send(user).status(200);
 
     } catch (e) {

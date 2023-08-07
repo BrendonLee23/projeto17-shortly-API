@@ -40,9 +40,10 @@ export async function getUrl(req, res) {
 
         const { rows: result } = await db.query(`
         
-            SELECT * FROM "urls" where id=$1
+            SELECT * FROM "urls" WHERE id=$1
         
         `, [id]);
+        console.log(result.rows[0], "vasco");
 
         if ((result.length < 1) || (result[0].deletedAt !== null)) {
 
@@ -57,6 +58,8 @@ export async function getUrl(req, res) {
             "url": result[0].url
 
         }
+        console.log(response, "vasco")
+
 
         res.status(200).send(response);
 

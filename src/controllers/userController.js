@@ -20,7 +20,7 @@ export async function createUser(req, res) {
             return res.sendStatus(409);
 
         }
-        if (user.password != user.confirmPassword ){
+        if (user.password != user.confirmPassword) {
             return res.sendStatus(422);
         }
 
@@ -41,39 +41,48 @@ export async function createUser(req, res) {
     }
 
 }
-export async function userLogin (req, res) {
+export async function userLogin(req, res) {
 
     const { email, password } = req.body;
 
-    const { rows: users } = await db.query(`
+
+    try {
+
+        const { rows: users } = await db.query(`
     
-        SELECT * FROM users WHERE email=$1
+    SELECT * FROM users WHERE email=$1
 
-    `, [email]);
+`, [email]);
 
-    const [user] = users;
+        const [user] = users;
 
-    if (!user) {
+        if (!user) {
 
-        return res.sendStatus(401);
+            return res.sendStatus(401);
 
+        }
+
+        if (bcrypt.compareSync(password, user.password)) {
+
+            const token = v4();
+
+            await db.query(`
+    
+        INSERT INTO sessions(token, "userId") VALUES ($1, $2)
+    
+    `, [token, user.id]);
+
+            return res.send({ token });
+
+        } else {
+            res.sendStatus(401)
+        }
+
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 
-    if (bcrypt.compareSync(password, user.password)) {
 
-        const token = v4();
-
-        await db.query(`
-        
-            INSERT INTO sessions(token, "userId") VALUES ($1, $2)
-        
-        `, [token, user.id]);
-
-        return res.send({token});
-
-    }
-
-    res.sendStatus(500);
 
 }
 export async function getUser(req, res) {
